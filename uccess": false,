@@ -1,0 +1,37 @@
+[33mcommit 163e1d6f45d09e90d3982a7ab83f8258de3d76c3[m[33m ([m[1;36mHEAD -> [m[1;32mendpoints[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/endpoints[m[33m, [m[1;31morigin/corrigiendo-errores[m[33m, [m[1;32mmain[m[33m, [m[1;32mcorrigiendo-errores[m[33m)[m
+Author: tecnopulsar <tecnopulsar@gmail.com>
+Date:   Sun Mar 9 13:29:35 2025 -0300
+
+    actualizacion gitignore
+
+[1mdiff --git a/.gitignore b/.gitignore[m
+[1mindex 29eec50..25b69f5 100644[m
+[1m--- a/.gitignore[m
+[1m+++ b/.gitignore[m
+[36m@@ -1,6 +1,25 @@[m
+[31m-/node_modules[m
+[32m+[m[32m# Node.js[m
+[32m+[m[32mnode_modules/[m
+[32m+[m[32mnpm-debug.log[m
+[32m+[m[32myarn-error.log[m
+[32m+[m
+[32m+[m[32m# Entorno[m
+[32m+[m[32m.env[m
+[32m+[m
+[32m+[m[32m# Compilación[m
+[32m+[m[32mdist/[m
+[32m+[m[32mbuild/[m
+[32m+[m
+[32m+[m[32m# Archivos temporales[m
+[32m+[m[32m*.tmp[m
+[32m+[m[32m*.temp[m
+[32m+[m
+[32m+[m[32m# Sistema[m
+[32m+[m[32m.DS_Store[m
+[32m+[m[32mThumbs.db[m
+ [m
+ /public/Videos[m
+ /public/VideosDefecto[m
+ /public/Screenshots[m
+[32m+[m[32m/public/uploads[m
+ [m
