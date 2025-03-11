@@ -90,7 +90,7 @@ export class VLCPlayer {
                 '--no-video-title-show',
                 '--no-video-deco',
                 '--no-mouse-events',
-                '--intf=qt',
+                '--intf=http',
                 '--http-port=8080',
                 '--http-password=tecno',
                 '--http-host=localhost',

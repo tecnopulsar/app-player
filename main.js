@@ -16,7 +16,7 @@ import systemEndpoints from './src/routes/systemEndpoints.mjs';
 import cors from 'cors';
 import fileHandler from './src/routes/fileHandler.mjs'; // Importar el router de manejo de archivos
 import appEndpoints from './src/routes/appEndpoints.mjs'; // Importar el nuevo router
-import playlistUploadHandler from './src/routes/playlistUploadHandler.mjs';
+import playlistHandler from './src/routes/playlistHandler.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -64,7 +64,7 @@ async function createWindow() {
     app.use('/api/app', appEndpoints);
     app.use('/api/system', systemEndpoints);
     app.use('/api/files', fileHandler);
-    app.use('/api/playlistUpload', playlistUploadHandler);
+    app.use('/api/playlist', playlistHandler);
     app.use('/api/vlc', vlcEndpoints);
 
     // Iniciar el servidor con la app configurada

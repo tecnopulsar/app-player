@@ -8,14 +8,14 @@ const appConfig = {
 
     // Configuración de rutas
     paths: {
-        uploads: './public/uploads',
         public: './public',
         videos: './public/videos',
         videosDefecto: './public/videosDefecto',
-        // playlist: './public/videos/playlist',
         playlistDefecto: './public/videosDefecto/playlistDefecto',
+        activePlaylist: './public/videos/playlist/activePlaylist.json',
         screenshots: './public/screenshots',
         images: './public/images',
+        uploads: './public/uploads',
         temp: './public/temp'
     },
 

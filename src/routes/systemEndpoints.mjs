@@ -67,7 +67,7 @@ router.post('/reboot', async (req, res) => {
 });
 
 // Endpoint para obtener información del sistema
-router.get('/system-info', (req, res) => {
+router.get('/info', (req, res) => {
     res.json({
         version: appConfig.app.version,
         name: appConfig.app.name,
