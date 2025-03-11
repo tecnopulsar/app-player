@@ -64,7 +64,7 @@ async function createWindow() {
     app.use('/api/app', appEndpoints);
     app.use('/api/system', systemEndpoints);
     app.use('/api/files', fileHandler);
-    app.use('/api/playlist', playlistUploadHandler);
+    app.use('/api/playlistUpload', playlistUploadHandler);
     app.use('/api/vlc', vlcEndpoints);
 
     // Iniciar el servidor con la app configurada
