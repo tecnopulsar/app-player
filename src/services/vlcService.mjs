@@ -68,6 +68,7 @@ export const vlcCommands = {
     setVolume: 'volume', // Ejemplo: volume 50 (para establecer el volumen al 50%)
 
     // Control de playlist
+    getPlaylist: 'playlist', // Comando para obtener la información de la playlist
     addToPlaylist: 'in_enqueue', // Agrega un archivo o URL a la playlist
     clearPlaylist: 'pl_empty', // Borra toda la playlist
     deleteItemFromPlaylist: 'pl_delete', // Elimina un elemento específico de la playlist (necesita el ID del elemento)
@@ -80,7 +81,7 @@ export const vlcCommands = {
     goToNextItem: 'pl_next',
     goToPreviousItem: 'pl_previous',
     goToSpecificItem: 'pl_play', // Reproduce un elemento específico (necesita el ID del elemento)
-
+    
     // Control de ventana y pantalla
     toggleFullscreen: 'fullscreen',
     minimize: 'minimize',
@@ -112,5 +113,5 @@ export const vlcCommands = {
     // Otras funcionalidades
     takeSnapshot: 'snapshot', // Toma una captura de pantalla del video actual
     showPlaylist: 'playlist', // Muestra u oculta la lista de reproducción
-    quit: 'quit', // Cierra VLC    
+    quit: 'quit', // Cierra VLC
 };

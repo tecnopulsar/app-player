@@ -5,6 +5,7 @@ import { appConfig } from '../config/appConfig.mjs';
 import path from 'path';
 import { promises as fsPromises } from 'fs';
 import { updateActivePlaylist } from '../routes/playlistHandler.mjs';
+import axios from 'axios';
 
 const router = express.Router();
 
@@ -167,13 +168,30 @@ router.post('/playlist/clear', async (req, res) => {
  */
 router.get('/playlist/info', async (req, res) => {
     try {
-        const playlistXml = await vlcRequest(vlcCommands.getPlaylist);
-        const parsedXml = await parseStringPromise(playlistXml);
+        // Realizar la solicitud para obtener la información de la playlist en formato JSON
+        const response = await axios.get('http://localhost:8080/requests/playlist.json', {
+            auth: {
+                username: '',
+                password: 'tecno'
+            }
+        });
+        console.log("🚀 ~ router.get ~ response:", response.data)
+
+        // Verificar si la respuesta contiene la información esperada
+        if (!response.data || !response.data.children) {
+            return res.status(404).json({
+                success: false,
+                message: 'No se encontró información de la playlist'
+            });
+        }
+
+        // Devolver la información de la playlist
         res.json({
             success: true,
-            playlist: parsedXml
+            playlist: response.data.children
         });
     } catch (error) {
+        console.error('Error al obtener información de la playlist:', error);
         res.status(500).json({
             success: false,
             message: 'Error al obtener información de la playlist',
