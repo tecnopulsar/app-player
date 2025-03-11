@@ -4,8 +4,21 @@ import path from 'path';
 import fs from 'fs';
 import { promises as fsPromises } from 'fs';
 import { appConfig } from '../config/appConfig.mjs';
+// Importar el VLCPlayer para controlar la reproducción
+import { VLCPlayer } from '../lib/vlcPlayer.js';
 
 const router = express.Router();
+
+// Crear una instancia del reproductor VLC (o utilizar una existente)
+let vlcPlayerInstance = null;
+
+// Función para obtener o crear la instancia del VLCPlayer
+function getVLCPlayerInstance() {
+    if (!vlcPlayerInstance) {
+        vlcPlayerInstance = new VLCPlayer();
+    }
+    return vlcPlayerInstance;
+}
 
 // Variables para el control de la playlist
 let IndexCountFilesInDirPlaylist = 0;
@@ -94,9 +107,13 @@ router.post('/upload', upload.single('file'), async (req, res) => {
         // Actualizar o crear la playlist
         const newPlaylistM3uPath = path.join(playlistDirPath, activePlaylistName);
         if (IndexCountFilesInDirPlaylist === 0) {
-            await fsPromises.writeFile(newPlaylistM3uPath, `#EXTM3U\n${newFileMP4Path}\n`);
+            // Usar la ruta completa para el archivo en la playlist
+            const fullPath = path.join('/home/tecno/app-player', newFileMP4Path);
+            await fsPromises.writeFile(newPlaylistM3uPath, `#EXTM3U\n${fullPath}\n`);
         } else {
-            await fsPromises.appendFile(newPlaylistM3uPath, `${newFileMP4Path}\n`);
+            // Usar la ruta completa para el archivo en la playlist
+            const fullPath = path.join('/home/tecno/app-player', newFileMP4Path);
+            await fsPromises.appendFile(newPlaylistM3uPath, `${fullPath}\n`);
         }
 
         // Incrementar el contador de archivos
@@ -104,8 +121,8 @@ router.post('/upload', upload.single('file'), async (req, res) => {
 
         // Verificar si es el último archivo de la playlist
         if (IndexCountFilesInDirPlaylist === countPlaylistItems) {
-            // Limpiar directorios antiguos
-            await cleanupOldDirectories(playlistDirName);
+            // Reiniciar la reproducción con la nueva playlist
+            await restartPlaybackWithNewPlaylist(playlistDirName, previewPlaylistDirPath);
 
             // Resetear contadores
             IndexCountFilesInDirPlaylist = 0;
@@ -113,7 +130,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
 
             return res.json({
                 success: true,
-                message: 'Playlist procesada correctamente',
+                message: 'Playlist procesada y reproduciendo correctamente',
                 playlist: {
                     name: playlistDirName,
                     path: newPlaylistM3uPath,
@@ -143,16 +160,61 @@ router.post('/upload', upload.single('file'), async (req, res) => {
     }
 });
 
-// Función para limpiar directorios antiguos
+// Nueva función para reiniciar la reproducción con la nueva playlist
+async function restartPlaybackWithNewPlaylist(newPlaylistDirName, oldPlaylistDirPath) {
+    try {
+        console.log('Reiniciando reproducción con nueva playlist:', newPlaylistDirName);
+
+        // Obtener la instancia del reproductor VLC
+        const vlcPlayer = getVLCPlayerInstance();
+
+        // Detener la reproducción actual
+        console.log('Deteniendo la reproducción actual...');
+        vlcPlayer.stop();
+
+        // Esperar un momento para asegurar que VLC se haya detenido
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // Iniciar la reproducción con la nueva playlist
+        console.log('Iniciando reproducción de la nueva playlist...');
+        const success = await vlcPlayer.start();
+
+        if (success) {
+            console.log('La nueva playlist se está reproduciendo correctamente.');
+
+            // Si la reproducción es exitosa, ahora podemos eliminar el directorio anterior
+            if (oldPlaylistDirPath && oldPlaylistDirPath !== path.join(appConfig.paths.videos, newPlaylistDirName)) {
+                try {
+                    console.log('Eliminando directorio de la playlist anterior:', oldPlaylistDirPath);
+                    await fsPromises.rm(oldPlaylistDirPath, { recursive: true, force: true });
+                    console.log('Directorio de la playlist anterior eliminado con éxito.');
+                } catch (error) {
+                    console.error('Error al eliminar el directorio de la playlist anterior:', error);
+                    // No lanzamos el error aquí para no interrumpir el flujo principal
+                }
+            }
+
+            // También podemos eliminar otros directorios antiguos que no sean ni la playlist actual ni la anterior
+            await cleanupOldDirectories(newPlaylistDirName);
+        } else {
+            console.error('Error al iniciar la reproducción de la nueva playlist.');
+        }
+    } catch (error) {
+        console.error('Error al reiniciar la reproducción:', error);
+        throw error;
+    }
+}
+
+// Función para limpiar directorios antiguos (modificada para excluir el directorio actual y el anterior)
 async function cleanupOldDirectories(currentDirName) {
     try {
         const dirs = await fsPromises.readdir(appConfig.paths.videos);
         for (const dir of dirs) {
             const dirPath = path.join(appConfig.paths.videos, dir);
             const stats = await fsPromises.stat(dirPath);
-            if (stats.isDirectory() && dir !== currentDirName) {
+            if (stats.isDirectory() && dir !== currentDirName && dirPath !== previewPlaylistDirPath) {
                 await fsPromises.rm(dirPath, { recursive: true, force: true });
-                console.log(`Directorio eliminado: ${dirPath}`);
+                console.log(`Directorio antiguo eliminado: ${dirPath}`);
             }
         }
     } catch (error) {

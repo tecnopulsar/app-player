@@ -12,7 +12,7 @@ const appConfig = {
         public: './public',
         videos: './public/videos',
         videosDefecto: './public/videosDefecto',
-        playlist: './public/videos/playlist',
+        // playlist: './public/videos/playlist',
         playlistDefecto: './public/videosDefecto/playlistDefecto',
         screenshots: './public/screenshots',
         images: './public/images',
