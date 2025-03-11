@@ -4,7 +4,6 @@ import { parseStringPromise } from 'xml2js';
 import { appConfig } from '../config/appConfig.mjs';
 import path from 'path';
 import { promises as fsPromises } from 'fs';
-import { updateActivePlaylist } from '../routes/playlistHandler.mjs';
 import axios from 'axios';
 
 const router = express.Router();
@@ -121,9 +120,6 @@ router.post('/playlist/load', async (req, res) => {
             input: fileUrl
         });
 
-        // Actualizar activePlaylist.json con la nueva playlist
-        await updateActivePlaylist(fileUrl);
-
         res.json({
             success: true,
             message: 'Playlist cargada y reproduciendo',
@@ -200,48 +196,5 @@ router.get('/playlist/info', async (req, res) => {
     }
 });
 
-/**
- * @swagger
- * /api/vlc/playlist/next:
- *   get:
- *     summary: Reproduce el siguiente elemento de la playlist
- */
-router.get('/playlist/next', async (req, res) => {
-    try {
-        await vlcRequest(vlcCommands.next);
-        res.json({
-            success: true,
-            message: 'Siguiente elemento de la playlist'
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Error al cambiar al siguiente elemento',
-            error: error.message
-        });
-    }
-});
-
-/**
- * @swagger
- * /api/vlc/playlist/previous:
- *   get:
- *     summary: Reproduce el elemento anterior de la playlist
- */
-router.get('/playlist/previous', async (req, res) => {
-    try {
-        await vlcRequest(vlcCommands.previous);
-        res.json({
-            success: true,
-            message: 'Elemento anterior de la playlist'
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Error al cambiar al elemento anterior',
-            error: error.message
-        });
-    }
-});
 
 export default router; 
