@@ -67,15 +67,6 @@ export async function initializeServer(customPort = port, app = null) {
       return server;
     }
 
-    // Si no se proporciona una app, crear una nueva
-    if (!app) {
-      app = createApp();
-
-      // Configurar rutas solo si estamos creando una nueva app
-      app.use('/api', endpoints);
-      app.use('/api/upload', uploadHandler);
-    }
-
     // Crear servidor HTTP
     server = createServer(app);
 

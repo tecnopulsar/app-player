@@ -58,7 +58,9 @@ async function createWindow() {
     app.use(cors());
 
     // Configuración de rutas
-    app.use('/api', endpoints);
+    app.use('/', endpoints);
+    // Middleware para servir archivos estáticos
+    app.use(express.static(path.join(__dirname, 'views')));
     app.use('/api/app', appEndpoints);
     app.use('/api/system', systemEndpoints);
     app.use('/api/files', fileHandler);
