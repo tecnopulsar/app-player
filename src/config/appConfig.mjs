@@ -14,6 +14,7 @@ const appConfig = {
         playlistDefecto: './public/videosDefecto/playlistDefecto',
         activePlaylist: './public/videos/playlist/activePlaylist.json',
         screenshots: './public/screenshots',
+        snapshots: './public/snapshots',
         images: './public/images',
         uploads: './public/uploads',
         temp: './public/temp'

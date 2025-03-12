@@ -81,7 +81,7 @@ export const vlcCommands = {
     goToNextItem: 'pl_next',
     goToPreviousItem: 'pl_previous',
     goToSpecificItem: 'pl_play', // Reproduce un elemento específico (necesita el ID del elemento)
-    
+
     // Control de ventana y pantalla
     toggleFullscreen: 'fullscreen',
     minimize: 'minimize',
@@ -111,7 +111,7 @@ export const vlcCommands = {
     openURL: 'in_open', // Abre una URL para reproducir
 
     // Otras funcionalidades
-    takeSnapshot: 'snapshot', // Toma una captura de pantalla del video actual
+    takeSnapshot: 'snapshot', // Comando para tomar un snapshot
     showPlaylist: 'playlist', // Muestra u oculta la lista de reproducción
     quit: 'quit', // Cierra VLC
 };
