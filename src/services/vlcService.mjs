@@ -92,7 +92,6 @@ export const vlcCommands = {
     stop: 'pl_stop',
     next: 'pl_next',
     previous: 'pl_previous',
-    fullscreen: 'fullscreen',
     toggleAudio: 'volume',
     getStatus: 'status',
 

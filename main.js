@@ -2,7 +2,7 @@
 import { app, ipcMain, BrowserWindow } from 'electron';
 import { exec } from 'child_process';
 import { fileURLToPath } from 'url';
-import path, { dirname, join } from 'path';
+import path, { dirname, join } from 'node:path';
 import { ServerManager } from './src/lib/serverManager.js';
 import { WindowManager } from './src/windows/windowManager.js';
 import { VLCPlayer } from './src/lib/vlcPlayer.js';
@@ -17,6 +17,7 @@ import cors from 'cors';
 import fileHandler from './src/routes/fileHandler.mjs'; // Importar el router de manejo de archivos
 import appEndpoints from './src/routes/appEndpoints.mjs'; // Importar el nuevo router
 import playlistHandler from './src/routes/playlistHandler.mjs';
+import screenHandler from './src/routes/screenHandler.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -66,6 +67,7 @@ async function createWindow() {
     app.use('/api/files', fileHandler);
     app.use('/api/playlist', playlistHandler);
     app.use('/api/vlc', vlcEndpoints);
+    app.use('/api/screen', screenHandler);
 
     // Iniciar el servidor con la app configurada
     await initializeServer(port, app);

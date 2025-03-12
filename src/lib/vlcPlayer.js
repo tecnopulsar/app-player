@@ -1,7 +1,6 @@
 import { spawn } from 'child_process';
 import path from 'path';
 import fs from 'fs/promises';
-import { appConfig } from '../config/appConfig.mjs';
 import { getActivePlaylist, initializeActivePlaylist } from '../services/vlcService.mjs';
 
 export class VLCPlayer {
@@ -89,12 +88,13 @@ export class VLCPlayer {
                 '--loop',
                 '--no-audio',
                 '--no-video-title-show',
-                '--no-video-deco',
-                '--no-mouse-events',
+                '--no-video-deco',       // Esta opción también ayuda a eliminar elementos de la interfaz
+                // '--no-mouse-events',
                 '--intf=http',
                 '--http-port=8080',
                 '--http-password=tecno',
                 '--http-host=localhost',
+                '--fullscreen', // Agregar opción para iniciar en pantalla completa
                 this.#playlistPath
             ];
 

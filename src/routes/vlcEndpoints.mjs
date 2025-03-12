@@ -1,10 +1,8 @@
 import express from 'express';
 import { vlcRequest, vlcCommands, updateActivePlaylist } from '../services/vlcService.mjs';
 import { parseStringPromise } from 'xml2js';
-import { appConfig } from '../config/appConfig.mjs';
-import path from 'path';
-import { promises as fsPromises } from 'fs';
 import axios from 'axios';
+import { exec } from 'child_process';
 
 const router = express.Router();
 
@@ -226,5 +224,25 @@ router.post('/snapshot', async (req, res) => {
         });
     }
 });
+
+/**
+ * @swagger
+ * /api/vlc/fullscreen:
+ *   post:
+ *     summary: Pone VLC en pantalla completa
+ */
+router.post('/togglefullscreen', async (req, res) => {
+    try {
+        await vlcRequest(vlcCommands.toggleFullscreen); // Asegúrate de que este comando esté definido en vlcCommands
+        res.json({ success: true, message: 'VLC está ahora en pantalla completa' });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error al poner VLC en pantalla completa',
+            error: error.message
+        });
+    }
+});
+
 
 export default router; 
