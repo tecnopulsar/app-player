@@ -204,28 +204,14 @@ router.get('/playlist/info', async (req, res) => {
  */
 router.post('/snapshot', async (req, res) => {
     try {
-        // Generar un nombre de archivo basado en la fecha y hora actual
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const screenshotDir = path.join(process.cwd(), appConfig.paths.screenshots);
-        const screenshotPath = path.join(screenshotDir, `snapshot-${timestamp}.png`);
-
-        // Asegurarse de que el directorio de screenshots existe
-        await fsPromises.mkdir(screenshotDir, { recursive: true });
-
         // Enviar el comando a VLC para tomar un snapshot
-        await vlcRequest(vlcCommands.takeSnapshot);
-
-        // Mover el archivo de snapshot al directorio de screenshots
-        // Nota: La ubicación del archivo de snapshot depende de la configuración de VLC
-        // Aquí asumimos que VLC guarda el snapshot en un directorio conocido
         // /home/tecno/Pictures/vlcsnap-2025-03-12-09h37m45s065.png
-        const vlcSnapshotPath = path.join(process.cwd(), appConfig.paths.vlcSnapshots, 'vlc-snapshot.png');
-        await fsPromises.rename(vlcSnapshotPath, screenshotPath);
+        await vlcRequest(vlcCommands.takeSnapshot);
 
         res.json({
             success: true,
             message: 'Snapshot capturado y almacenado correctamente',
-            path: screenshotPath
+            path: '/home/tecno/Pictures/'
         });
     } catch (error) {
         console.error('Error al capturar el snapshot:', error);

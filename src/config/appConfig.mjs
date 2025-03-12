@@ -35,5 +35,12 @@ const appConfig = {
     }
 };
 
+// Configuración de VLC
+const vlcConfig = {
+    host: 'localhost',
+    port: 8080,
+    username: '', // Usuario de VLC (por defecto está vacío)
+    password: 'tecno',
+};
 // Exportar las configuraciones
-export { appConfig };
+export { appConfig, vlcConfig };

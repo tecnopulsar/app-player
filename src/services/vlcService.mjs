@@ -1,16 +1,13 @@
 import axios from 'axios';
+import { vlcConfig } from '../config/appConfig.mjs';
 
-const VLC_HOST = 'localhost';
-const VLC_PORT = 8080;
-const VLC_USERNAME = ''; // Usuario de VLC (por defecto está vacío)
-const VLC_PASSWORD = 'tecno';
-
+const { host, port, username, password } = vlcConfig;
 // Configuración global de axios para VLC
 const vlcAxios = axios.create({
-    baseURL: `http://${VLC_HOST}:${VLC_PORT}/requests/status.xml`,
+    baseURL: `http://${host}:${port}/requests/status.xml`,
     auth: {
-        username: VLC_USERNAME,
-        password: VLC_PASSWORD
+        username: username,
+        password: password
     },
     timeout: 5000 // Tiempo máximo de espera para evitar bloqueos
 });
