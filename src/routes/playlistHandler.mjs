@@ -20,16 +20,6 @@ function getVLCPlayerInstance() {
     return vlcPlayerInstance;
 }
 
-// Variables para el control de la playlist
-let IndexCountFilesInDirPlaylist = 0;
-let countPlaylistItems = 0;
-let activePlaylistName = null;
-let playlistDirName = null;
-let playlistDirPath = null;
-let currentPlaylistDirPath = null;
-let newPlaylistM3uPath = null;
-let previewPlaylistDirPath = null;
-
 // Configuración de multer para el manejo de archivos
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -44,7 +34,6 @@ const storage = multer.diskStorage({
         cb(null, file.originalname);
     }
 });
-// Configuración de multer
 
 const upload = multer({
     storage: storage,
@@ -52,6 +41,16 @@ const upload = multer({
         fileSize: appConfig.security.maxFileSize
     }
 });
+
+// Variables para el control de la playlist
+let IndexCountFilesInDirPlaylist = 0;
+let countPlaylistItems = 0;
+let activePlaylistName = null;
+let playlistDirName = null;
+let playlistDirPath = null;
+let currentPlaylistDirPath = null;
+let newPlaylistM3uPath = null;
+let previewPlaylistDirPath = null;
 
 /**
  * @swagger
@@ -177,6 +176,5 @@ router.use((error, req, res, next) => {
     }
     next(error);
 });
-
 
 export default router; 

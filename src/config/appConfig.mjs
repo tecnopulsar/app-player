@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+
 // Configuración general de la aplicación
 const appConfig = {
     // Configuración del servidor
@@ -12,7 +15,7 @@ const appConfig = {
         videos: './public/videos',
         videosDefecto: './public/videosDefecto',
         playlistDefecto: './public/videosDefecto/playlistDefecto',
-        activePlaylist: './public/videos/playlist/activePlaylist.json',
+        activePlaylist: './src/config/activePlaylist.json',
         screenshots: './public/screenshots',
         snapshots: './public/snapshots',
         images: './public/images',
@@ -42,5 +45,20 @@ const vlcConfig = {
     username: '', // Usuario de VLC (por defecto está vacío)
     password: 'tecno',
 };
-// Exportar las configuraciones
-export { appConfig, vlcConfig };
+
+const activePlaylistPath = path.join(process.cwd(), 'src', 'config', 'activePlaylist.json');
+const defaultPlaylistPath = '/home/tecno/app-player/public/videosDefecto/playlistDefecto/playlistDefecto.m3u';
+
+function initializeActivePlaylist() {
+    if (!fs.existsSync(activePlaylistPath)) {
+        const initialData = {
+            activePlaylist: defaultPlaylistPath,
+            updatedAt: new Date().toISOString()
+        };
+        fs.writeFileSync(activePlaylistPath, JSON.stringify(initialData, null, 2));
+    }
+}
+
+initializeActivePlaylist();
+
+export { appConfig, vlcConfig, activePlaylistPath, initializeActivePlaylist };

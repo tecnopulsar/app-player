@@ -2,58 +2,44 @@ import { spawn } from 'child_process';
 import path from 'path';
 import fs from 'fs/promises';
 import { appConfig } from '../config/appConfig.mjs';
+import { getActivePlaylist, initializeActivePlaylist } from '../services/vlcService.mjs';
 
 export class VLCPlayer {
     #process = null;
     #playlistPath = null;
     #watchdog = null;
 
-    async #findCustomPlaylist() {
+    constructor() {
+        this.playlistPath = null;
+    }
+
+    async initialize() {
         try {
-            const videosPath = appConfig.paths.videos;
-            const items = await fs.readdir(videosPath);
-
-            // Buscar la primera carpeta que comience con 'playlist_'
-            const playlistFolder = items.find(async item => {
-                const fullPath = path.join(videosPath, item);
-                const stat = await fs.stat(fullPath);
-                return item.startsWith('playlist_') && stat.isDirectory();
-            });
-
-            if (playlistFolder) {
-                const folderPath = path.join(videosPath, playlistFolder);
-                const files = await fs.readdir(folderPath);
-                const playlistFile = files.find(file => file.endsWith('.m3u'));
-
-                if (playlistFile) {
-                    return path.join(folderPath, playlistFile);
-                }
+            // Obtener la playlist activa desde el archivo JSON
+            const activePlaylist = await this.getPlaylistPath();
+            if (activePlaylist) {
+                console.log('Playlist activa encontrada:', activePlaylist);
+                this.playlistPath = activePlaylist;
+                await this.loadPlaylist(activePlaylist);
+            } else {
+                console.error('No se pudo encontrar una playlist activa.');
             }
-            return null;
         } catch (error) {
-            console.error('Error buscando playlist personalizada:', error);
-            return null;
+            console.error('Error al inicializar VLCPlayer:', error);
         }
     }
 
     async getPlaylistPath() {
         try {
-            // Primero intentar encontrar una playlist personalizada
-            const customPlaylist = await this.#findCustomPlaylist();
-            if (customPlaylist) {
-                console.log('Playlist personalizada encontrada:', customPlaylist);
-                return customPlaylist;
-            }
+            // Leer la playlist activa desde el archivo JSON
+            const activePlaylist = getActivePlaylist();
+            console.log('Playlist activa desde JSON:', activePlaylist);
 
-            // Si no hay playlist personalizada, usar la playlist por defecto
-            const defaultPlaylist = path.join(appConfig.paths.videosDefecto, 'playlistDefecto', 'playlistDefecto.m3u');
-            console.log("Usando playlist por defecto:", defaultPlaylist);
-
-            // Verificar que el archivo existe
-            await fs.access(defaultPlaylist);
+            // Verificar que el archivo de la playlist activa existe
+            await fs.access(activePlaylist);
 
             // Leer y verificar el contenido de la playlist
-            const playlistContent = await fs.readFile(defaultPlaylist, 'utf8');
+            const playlistContent = await fs.readFile(activePlaylist, 'utf8');
             const entries = playlistContent
                 .split('\n')
                 .filter(line => line.trim() && !line.startsWith('#'));
@@ -65,20 +51,35 @@ export class VLCPlayer {
             // Verificar que los archivos referenciados existen
             await Promise.all(entries.map(async entry => {
                 const fileName = path.basename(entry.trim());
-                const videoPath = path.join(appConfig.paths.videosDefecto, 'playlistDefecto', fileName);
+                const videoPath = path.join(path.dirname(activePlaylist), fileName);
                 await fs.access(videoPath);
                 console.log('Video encontrado:', videoPath);
             }));
 
-            return defaultPlaylist;
+            return activePlaylist;
         } catch (error) {
             console.error('Error al obtener la ruta de la playlist:', error);
             return null;
         }
     }
 
+    async loadPlaylist(playlistPath) {
+        // Lógica para cargar la playlist en VLC
+        console.log(`Cargando playlist: ${playlistPath}`);
+        // Aquí deberías implementar la lógica para cargar la playlist en VLC
+    }
+
     async start() {
         try {
+            // Verificar si el archivo activePlaylist.json existe
+            const activePlaylistPath = path.join(process.cwd(), 'src', 'config', 'activePlaylist.json');
+            try {
+                await fs.access(activePlaylistPath);
+            } catch {
+                console.warn('El archivo activePlaylist.json no existe. Inicializando con valores predeterminados.');
+                initializeActivePlaylist(); // Inicializar el archivo si no existe
+            }
+
             this.#playlistPath = await this.getPlaylistPath();
             if (!this.#playlistPath) {
                 throw new Error('No se encontró la playlist o los videos referenciados');

@@ -1,13 +1,50 @@
 import axios from 'axios';
-import { vlcConfig } from '../config/appConfig.mjs';
+import fs from 'fs';
+import path from 'path';
+import { vlcConfig, appConfig } from '../config/appConfig.mjs';
 
-const { host, port, username, password } = vlcConfig;
+const activePlaylistPath = path.join(process.cwd(), 'src', 'config', 'activePlaylist.json');
+const { defaultPlaylist } = appConfig;
+
+// Función para inicializar la playlist activa
+export const initializeActivePlaylist = () => {
+    if (!fs.existsSync(activePlaylistPath)) {
+        const initialData = {
+            activePlaylist: defaultPlaylist,
+            updatedAt: new Date().toISOString()
+        };
+        fs.writeFileSync(activePlaylistPath, JSON.stringify(initialData, null, 2));
+    }
+};
+
+// Leer la playlist activa desde el archivo JSON
+export const getActivePlaylist = () => {
+    const data = fs.readFileSync(activePlaylistPath, 'utf-8');
+    const { activePlaylist } = JSON.parse(data);
+    return activePlaylist;
+};
+
+// Función para actualizar la playlist activa
+export const updateActivePlaylist = (newPlaylistPath) => {
+    try {
+        const updatedData = {
+            activePlaylist: newPlaylistPath,
+            updatedAt: new Date().toISOString()
+        };
+        fs.writeFileSync(activePlaylistPath, JSON.stringify(updatedData, null, 2));
+        console.log(`Playlist activa actualizada a: ${newPlaylistPath}`);
+    } catch (error) {
+        console.error('Error al actualizar la playlist activa:', error);
+        throw error;
+    }
+};
+
 // Configuración global de axios para VLC
 const vlcAxios = axios.create({
-    baseURL: `http://${host}:${port}/requests/status.xml`,
+    baseURL: `http://${vlcConfig.host}:${vlcConfig.port}/requests/status.xml`,
     auth: {
-        username: username,
-        password: password
+        username: vlcConfig.username,
+        password: vlcConfig.password
     },
     timeout: 5000 // Tiempo máximo de espera para evitar bloqueos
 });

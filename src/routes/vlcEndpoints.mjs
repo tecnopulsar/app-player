@@ -1,5 +1,5 @@
 import express from 'express';
-import { vlcRequest, vlcCommands } from '../services/vlcService.mjs';
+import { vlcRequest, vlcCommands, updateActivePlaylist } from '../services/vlcService.mjs';
 import { parseStringPromise } from 'xml2js';
 import { appConfig } from '../config/appConfig.mjs';
 import path from 'path';
@@ -99,7 +99,7 @@ router.get('/stop', async (req, res) => {
  * @swagger
  * /api/vlc/playlist/load:
  *   post:
- *     summary: Carga una playlist en VLC
+ *     summary: Carga una playlist en VLC y actualiza la playlist activa
  */
 router.post('/playlist/load', async (req, res) => {
     try {
@@ -120,12 +120,16 @@ router.post('/playlist/load', async (req, res) => {
             input: fileUrl
         });
 
+        // Actualizar el archivo activePlaylist.json con la nueva playlist
+        updateActivePlaylist(playlistPath);
+
         res.json({
             success: true,
             message: 'Playlist cargada y reproduciendo',
             playlist: fileUrl
         });
     } catch (error) {
+        console.error('Error al cargar la playlist:', error);
         res.status(500).json({
             success: false,
             message: 'Error al cargar la playlist',
